@@ -34,7 +34,7 @@ Add `rune-cfg` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rune-cfg = "0.5.0"
+rune-cfg = "0.6.0"
 ```
 
 ## Quick Example

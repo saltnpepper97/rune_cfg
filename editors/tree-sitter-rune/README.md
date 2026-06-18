@@ -1,8 +1,8 @@
-# tree-sitter-rune
+# tree-sitter-runecfg
 
 Experimental Tree-sitter grammar for RUNE configuration files.
 
-This grammar is intentionally kept under `editors/tree-sitter-rune/` while RUNE's syntax and editor tooling are still evolving. It can be split into a dedicated `tree-sitter-rune` repository later.
+This grammar is intentionally kept under `editors/tree-sitter-rune/` while RUNE's syntax and editor tooling are still evolving. It can be split into a dedicated `tree-sitter-runecfg` repository later.
 
 Current scope:
 

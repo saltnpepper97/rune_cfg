@@ -12,7 +12,7 @@ It provides:
 Install the language server binary first:
 
 ```sh
-cargo install rune-cfg --version 0.5.0
+cargo install rune-cfg --version 0.6.0
 ```
 
 Then install extension dependencies and compile the client:
@@ -29,7 +29,7 @@ By default, the extension launches `rune-lsp` from `PATH`. To test a local devel
 
 ```json
 {
-  "rune.server.path": "/path/to/rune-cfg/target/debug/rune-lsp"
+  "runecfg.server.path": "/path/to/rune-cfg/target/debug/rune-lsp"
 }
 ```
 

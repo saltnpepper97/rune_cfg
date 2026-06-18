@@ -31,7 +31,7 @@ For LSP diagnostics, completion, hover, navigation, rename, and formatting, inst
 See [Language Server](../../docs/language-server.md) for the full capability list and schema-aware behavior.
 
 ```sh
-cargo install rune-cfg --version 0.5.0
+cargo install rune-cfg --version 0.6.0
 ```
 
 For local development, build the binary from this repository:
@@ -49,11 +49,11 @@ target/debug/rune-lsp
 Neovim 0.11+ can launch the installed binary directly:
 
 ```lua
-vim.lsp.config("rune_lsp", {
+vim.lsp.config("runecfg_lsp", {
   cmd = { "rune-lsp" },
-  filetypes = { "rune" },
+  filetypes = { "runecfg" },
   root_markers = { "schema.rune", ".rune", ".git" },
 })
 
-vim.lsp.enable("rune_lsp")
+vim.lsp.enable("runecfg_lsp")
 ```

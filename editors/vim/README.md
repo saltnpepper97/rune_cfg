@@ -31,7 +31,7 @@ For LSP diagnostics, completion, hover, navigation, rename, and formatting, inst
 See [Language Server](../../docs/language-server.md) for the full capability list and schema-aware behavior.
 
 ```sh
-cargo install rune-cfg --version 0.5.0
+cargo install rune-cfg --version 0.6.0
 ```
 
 For local development, build the binary from this repository:
@@ -55,7 +55,7 @@ if executable('rune-lsp')
   autocmd User lsp_setup call lsp#register_server({
     \ 'name': 'rune-lsp',
     \ 'cmd': {server_info->['rune-lsp']},
-    \ 'allowlist': ['rune'],
+    \ 'allowlist': ['runecfg'],
     \ })
 endif
 ```

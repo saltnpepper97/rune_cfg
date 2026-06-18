@@ -11,7 +11,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const outputChannel = vscode.window.createOutputChannel("RUNE Language Server");
   context.subscriptions.push(outputChannel);
 
-  const config = vscode.workspace.getConfiguration("rune");
+  const config = vscode.workspace.getConfiguration("runecfg");
   const command = config.get<string>("server.path", "rune-lsp");
   const args = config.get<string[]>("server.args", []);
 
@@ -24,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   };
 
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: "file", language: "rune" }],
+    documentSelector: [{ scheme: "file", language: "runecfg" }],
     outputChannel,
     synchronize: {
       fileEvents: vscode.workspace.createFileSystemWatcher("**/*.rune"),
@@ -32,7 +32,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   };
 
   client = new LanguageClient(
-    "rune-lsp",
+    "runecfg-lsp",
     "RUNE Language Server",
     serverOptions,
     clientOptions,

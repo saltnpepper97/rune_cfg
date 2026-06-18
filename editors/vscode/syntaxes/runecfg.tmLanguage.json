@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "RUNE",
-  "scopeName": "source.rune",
+  "scopeName": "source.runecfg",
   "patterns": [
     { "include": "#comments" },
     { "include": "#metadata" },
@@ -20,7 +20,7 @@
     "comments": {
       "patterns": [
         {
-          "name": "comment.line.number-sign.rune",
+          "name": "comment.line.number-sign.runecfg",
           "match": "#.*$"
         }
       ]
@@ -28,10 +28,10 @@
     "metadata": {
       "patterns": [
         {
-          "name": "meta.annotation.rune",
+          "name": "meta.annotation.runecfg",
           "match": "@[A-Za-z_][A-Za-z0-9_-]*",
           "captures": {
-            "0": { "name": "keyword.control.directive.rune" }
+            "0": { "name": "keyword.control.directive.runecfg" }
           }
         }
       ]
@@ -39,11 +39,11 @@
     "keywords": {
       "patterns": [
         {
-          "name": "keyword.control.rune",
+          "name": "keyword.control.runecfg",
           "match": "\\b(?:gather|as|if|else|elseif|else-if|end|endif|schema)\\b"
         },
         {
-          "name": "storage.modifier.rune",
+          "name": "storage.modifier.runecfg",
           "match": "\\b(?:required|default|range|enum)\\b"
         }
       ]
@@ -51,7 +51,7 @@
     "schema-types": {
       "patterns": [
         {
-          "name": "support.type.rune",
+          "name": "support.type.runecfg",
           "match": "\\b(?:string|int|float|number|bool|regex|null|any|array|object)\\b"
         }
       ]
@@ -59,10 +59,10 @@
     "block-keys": {
       "patterns": [
         {
-          "name": "meta.block.rune",
+          "name": "meta.block.runecfg",
           "match": "^\\s*(?:schema\\s+)?([A-Za-z_][A-Za-z0-9_-]*|\"(?:\\\\.|[^\"\\\\])*\")\\s*:",
           "captures": {
-            "1": { "name": "entity.name.section.rune" }
+            "1": { "name": "entity.name.section.runecfg" }
           }
         }
       ]
@@ -70,10 +70,10 @@
     "assignment-keys": {
       "patterns": [
         {
-          "name": "meta.assignment.rune",
+          "name": "meta.assignment.runecfg",
           "match": "^\\s*([A-Za-z_][A-Za-z0-9_-]*|\"(?:\\\\.|[^\"\\\\])*\")(?=\\s+(?:=\\s*)?[^#\\s])",
           "captures": {
-            "1": { "name": "variable.other.member.rune" }
+            "1": { "name": "variable.other.member.runecfg" }
           }
         }
       ]
@@ -81,7 +81,7 @@
     "references": {
       "patterns": [
         {
-          "name": "variable.other.rune",
+          "name": "variable.other.runecfg",
           "match": "\\$[A-Za-z_][A-Za-z0-9_-]*(?:\\.[A-Za-z_][A-Za-z0-9_-]*)*"
         }
       ]
@@ -89,7 +89,7 @@
     "regex": {
       "patterns": [
         {
-          "name": "string.regexp.rune",
+          "name": "string.regexp.runecfg",
           "match": "r\"(?:\\\\.|[^\"\\\\])*\""
         }
       ]
@@ -97,23 +97,23 @@
     "strings": {
       "patterns": [
         {
-          "name": "string.quoted.double.rune",
+          "name": "string.quoted.double.runecfg",
           "begin": "\"",
           "end": "\"",
           "patterns": [
             {
-              "name": "constant.character.escape.rune",
+              "name": "constant.character.escape.runecfg",
               "match": "\\\\."
             }
           ]
         },
         {
-          "name": "string.quoted.single.rune",
+          "name": "string.quoted.single.runecfg",
           "begin": "'",
           "end": "'",
           "patterns": [
             {
-              "name": "constant.character.escape.rune",
+              "name": "constant.character.escape.runecfg",
               "match": "\\\\."
             }
           ]
@@ -123,7 +123,7 @@
     "numbers": {
       "patterns": [
         {
-          "name": "constant.numeric.rune",
+          "name": "constant.numeric.runecfg",
           "match": "\\b-?\\d+(?:\\.\\d+)?\\b"
         }
       ]
@@ -131,7 +131,7 @@
     "constants": {
       "patterns": [
         {
-          "name": "constant.language.rune",
+          "name": "constant.language.runecfg",
           "match": "\\b(?:true|false|null)\\b"
         }
       ]
@@ -139,11 +139,11 @@
     "punctuation": {
       "patterns": [
         {
-          "name": "punctuation.separator.rune",
+          "name": "punctuation.separator.runecfg",
           "match": "[:=,]"
         },
         {
-          "name": "punctuation.definition.array.rune",
+          "name": "punctuation.definition.array.runecfg",
           "match": "[\\[\\]]"
         }
       ]

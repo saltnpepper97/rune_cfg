@@ -2,7 +2,7 @@
   "name": "rune-cfg",
   "displayName": "RUNE",
   "description": "Language support for RUNE configuration files.",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "publisher": "saltnpepper97",
   "license": "GPL-3.0-or-later",
   "repository": {
@@ -21,7 +21,7 @@
     "lsp"
   ],
   "activationEvents": [
-    "onLanguage:rune"
+    "onLanguage:runecfg"
   ],
   "engines": {
     "vscode": "^1.89.0"
@@ -43,10 +43,10 @@
   "contributes": {
     "languages": [
       {
-        "id": "rune",
+        "id": "runecfg",
         "aliases": [
-          "RUNE",
-          "rune"
+          "RUNE Config",
+          "runecfg"
         ],
         "extensions": [
           ".rune"
@@ -60,21 +60,21 @@
     ],
     "grammars": [
       {
-        "language": "rune",
-        "scopeName": "source.rune",
-        "path": "./syntaxes/rune.tmLanguage.json"
+        "language": "runecfg",
+        "scopeName": "source.runecfg",
+        "path": "./syntaxes/runecfg.tmLanguage.json"
       }
     ],
     "configuration": {
       "title": "RUNE",
       "properties": {
-        "rune.server.path": {
+        "runecfg.server.path": {
           "type": "string",
           "default": "rune-lsp",
           "scope": "machine-overridable",
           "description": "Path to the rune-lsp executable. Use an absolute path for a local development build."
         },
-        "rune.server.args": {
+        "runecfg.server.args": {
           "type": "array",
           "default": [],
           "scope": "machine-overridable",

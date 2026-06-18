@@ -86,7 +86,7 @@ Completion uses the active schema to suggest only fields that belong in the curr
 Install the released server binary with:
 
 ```sh
-cargo install rune-cfg --version 0.5.0
+cargo install rune-cfg --version 0.6.0
 ```
 
 Or run the server directly from this repository with:
@@ -129,20 +129,20 @@ cp -r editors/nvim/ftplugin ~/.config/nvim/
 Then configure the LSP in Neovim 0.11+:
 
 ```lua
-vim.lsp.config("rune_lsp", {
+vim.lsp.config("runecfg_lsp", {
   cmd = { "rune-lsp" },
-  filetypes = { "rune" },
+  filetypes = { "runecfg" },
   root_markers = { "schema.rune", ".rune", ".git" },
 })
 
-vim.lsp.enable("rune_lsp")
+vim.lsp.enable("runecfg_lsp")
 ```
 
 For one-off testing without a named config:
 
 ```lua
 vim.lsp.start({
-  name = "rune_lsp",
+  name = "runecfg_lsp",
   cmd = { "/path/to/rune-cfg/target/debug/rune-lsp" },
   root_dir = vim.fs.root(0, { "schema.rune", ".rune", ".git" }),
 })
@@ -170,7 +170,7 @@ npm install
 npm run compile
 ```
 
-Run the extension from VS Code's Extension Development Host. By default it launches `rune-lsp` from `PATH`; set `rune.server.path` to an absolute binary path when testing a local development build. See [`editors/vscode/README.md`](../editors/vscode/README.md) for details.
+Run the extension from VS Code's Extension Development Host. By default it launches `rune-lsp` from `PATH`; set `runecfg.server.path` to an absolute binary path when testing a local development build. See [`editors/vscode/README.md`](../editors/vscode/README.md) for details.
 
 ## Tree-sitter
 

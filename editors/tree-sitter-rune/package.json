@@ -1,6 +1,6 @@
 {
-  "name": "tree-sitter-rune",
-  "version": "0.1.0",
+  "name": "tree-sitter-runecfg",
+  "version": "0.2.0",
   "description": "Tree-sitter grammar for RUNE configuration files",
   "main": "grammar.js",
   "keywords": [
@@ -18,7 +18,7 @@
   },
   "tree-sitter": [
     {
-      "scope": "source.rune",
+      "scope": "source.runecfg",
       "file-types": [
         "rune"
       ],

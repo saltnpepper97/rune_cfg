@@ -1,7 +1,7 @@
 const IDENTIFIER = /[A-Za-z_][A-Za-z0-9_-]*/;
 
 module.exports = grammar({
-  name: 'rune',
+  name: 'runecfg',
 
   extras: $ => [/[ \t\r]/, $.comment],
 

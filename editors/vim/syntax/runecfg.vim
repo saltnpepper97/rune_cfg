@@ -47,4 +47,4 @@ hi def link runeObjectKey Function
 hi def link runeKey Identifier
 hi def link runeObjectDelimiter Delimiter
 
-let b:current_syntax = "rune"
+let b:current_syntax = "runecfg"

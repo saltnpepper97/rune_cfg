@@ -381,7 +381,7 @@ impl LanguageServer for RuneLanguageServer {
                 ..ServerCapabilities::default()
             },
             server_info: Some(tower_lsp::lsp_types::ServerInfo {
-                name: "rune-lsp".into(),
+                name: "runecfg-lsp".into(),
                 version: Some(env!("CARGO_PKG_VERSION").into()),
             }),
         })
@@ -389,7 +389,7 @@ impl LanguageServer for RuneLanguageServer {
 
     async fn initialized(&self, _: InitializedParams) {
         self.client
-            .log_message(MessageType::INFO, "rune-lsp initialized")
+            .log_message(MessageType::INFO, "runecfg-lsp initialized")
             .await;
     }
 
