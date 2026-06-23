@@ -838,3 +838,54 @@ end
     assert_eq!(diagnostics.len(), 1);
     assert!(diagnostics[0].message.contains("between 1 and 65535"));
 }
+
+// ===== Resolution Memoization Tests =====
+
+#[test]
+fn test_repeated_access_is_consistent_after_memoization() {
+    let config_content = r#"
+mod_main "alt"
+
+app:
+  server:
+    host "localhost"
+    port 8080
+  end
+  keybinds:
+    modifier $var.mod_main
+  end
+end
+"#;
+
+    let config = RuneConfig::from_str(config_content).expect("config should parse");
+
+    // First access builds and caches the resolved root; subsequent accesses reuse it.
+    // All must return identical values, and references must stay resolved.
+    for _ in 0..5 {
+        let host: String = config.get("app.server.host").expect("host");
+        let port: u64 = config.get("app.server.port").expect("port");
+        let modifier: String = config.get("app.keybinds.modifier").expect("modifier");
+        assert_eq!(host, "localhost");
+        assert_eq!(port, 8080);
+        assert_eq!(modifier, "alt");
+    }
+}
+
+#[test]
+fn test_inject_import_invalidates_resolved_cache() {
+    // Resolve once so the root is built and cached.
+    let mut config =
+        RuneConfig::from_str("name \"before\"\ngreeting $var.name\n").expect("config should parse");
+    let before: String = config.get("greeting").expect("greeting");
+    assert_eq!(before, "before");
+
+    // Replace the main document with one that resolves differently. inject_import must drop
+    // the memoized resolution so the next access reflects the new document.
+    let replacement =
+        RuneConfig::from_str("name \"after\"\ngreeting $var.name\n").expect("config should parse");
+    let new_main = replacement.document().expect("main doc").clone();
+    config.inject_import("main".to_string(), new_main);
+
+    let after: String = config.get("greeting").expect("greeting");
+    assert_eq!(after, "after");
+}

@@ -23,7 +23,9 @@ impl RuneConfig {
     where
         T: TryFrom<Value, Error = RuneError>,
     {
-        let value = self.get_value_flexible(path)?;
+        let value = self
+            .get_value_flexible(path)
+            .map_err(|e| self.not_found_with_line_info(e, path))?;
         T::try_from(value).map_err(|e| enhance_error_with_line_info(e, path, &self.raw_content))
     }
 
@@ -154,8 +156,18 @@ impl RuneConfig {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn get_value(&self, path: &str) -> Result<Value, RuneError> {
+    /// Build (once) and return the fully-resolved root object.
+    ///
+    /// References, conditionals, `$env`/`$sys`/`var`, and inline/block `if` are all resolved
+    /// and flattened a single time, then cached in `self.resolved_root`. Every value lookup
+    /// reuses this, turning what used to be a full-document deep-clone + recursive resolve
+    /// *per key access* into a single resolve for the lifetime of the instance.
+    fn resolved_root(&self) -> Result<&Value, RuneError> {
         use crate::ast::ObjectItem;
+
+        if let Some(resolved) = self.resolved_root.get() {
+            return Ok(resolved);
+        }
 
         let main_doc =
             self.documents
@@ -196,12 +208,24 @@ impl RuneConfig {
         }
 
         // Resolve + flatten everything (references, $env/$sys, inline if, and block if/endif).
-        let resolved_root =
+        let resolved =
             helpers::resolve_value_recursively(&Value::Object(root_items), &temp_parser, main_doc)?;
+
+        // Cache it. If another thread raced us to set it first, that's fine — the resolution
+        // is deterministic, so we just use whichever value won.
+        let _ = self.resolved_root.set(resolved);
+        Ok(self
+            .resolved_root
+            .get()
+            .expect("resolved_root was just set"))
+    }
+
+    pub fn get_value(&self, path: &str) -> Result<Value, RuneError> {
+        let resolved_root = self.resolved_root()?;
 
         // Root lookup: return fully resolved root
         if path.trim().is_empty() {
-            return Ok(resolved_root);
+            return Ok(resolved_root.clone());
         }
 
         // Now traverse the resolved Value tree to find the requested path.
@@ -225,29 +249,47 @@ impl RuneConfig {
         }
 
         let segs: Vec<&str> = path.split('.').collect();
-        lookup_path(&resolved_root, &segs).ok_or_else(|| {
-            let (line, snippet) = helpers::find_config_line(path, &self.raw_content);
-            if line > 0 {
-                RuneError::SyntaxError {
-                    message: format!(
-                        "Path '{}' not found in configuration (near line {})",
-                        path, line
-                    ),
-                    line,
-                    column: 0,
-                    hint: Some(format!("Check around: {}", snippet)),
-                    code: Some(304),
-                }
-            } else {
-                RuneError::SyntaxError {
-                    message: format!("Path '{}' not found in configuration", path),
-                    line: 0,
-                    column: 0,
-                    hint: Some("Check that the path exists in your config file".into()),
-                    code: Some(304),
-                }
+        // Return a cheap "not found" error here. Deriving a line number requires scanning the
+        // whole raw config, and this path is extremely hot: `get_value_flexible` retries
+        // snake/kebab variants and callers probe many candidate paths, so most lookups miss
+        // several times before hitting. `get_optional`/`has` discard the error entirely. Line
+        // info is attached lazily at the `get()` boundary (see `not_found_with_line_info`).
+        lookup_path(resolved_root, &segs).ok_or_else(|| Self::not_found_error(path))
+    }
+
+    /// Cheap "path not found" error with no raw-config scan.
+    fn not_found_error(path: &str) -> RuneError {
+        RuneError::SyntaxError {
+            message: format!("Path '{}' not found in configuration", path),
+            line: 0,
+            column: 0,
+            hint: Some("Check that the path exists in your config file".into()),
+            code: Some(304),
+        }
+    }
+
+    /// Enrich a "not found" (code 304) error with a best-effort line number by scanning the
+    /// raw config. Only called on the cold user-facing `get()` failure path, never on the hot
+    /// `get_optional`/`has`/variant-probe paths.
+    fn not_found_with_line_info(&self, e: RuneError, path: &str) -> RuneError {
+        let RuneError::SyntaxError {
+            code: Some(304), ..
+        } = &e
+        else {
+            return e;
+        };
+        let (line, snippet) = helpers::find_config_line(path, &self.raw_content);
+        if line > 0 {
+            RuneError::SyntaxError {
+                message: format!("Path '{}' not found in configuration (near line {})", path, line),
+                line,
+                column: 0,
+                hint: Some(format!("Check around: {}", snippet)),
+                code: Some(304),
             }
-        })
+        } else {
+            e
+        }
     }
 
     /// Get all keys at a given path level.

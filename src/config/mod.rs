@@ -20,6 +20,15 @@ pub struct RuneConfig {
     documents: IndexMap<String, Document>,
     main_doc_key: String,
     raw_content: String, // Store for error reporting
+    /// Memoized fully-resolved root object (references, conditionals, `$env`/`$sys`/`var`,
+    /// and inline/block `if` all flattened). Built lazily on first value access and reused
+    /// for every subsequent lookup, since `documents` is immutable for an instance except
+    /// via `inject_import` (which resets this).
+    ///
+    /// Note: `$env` references are resolved via the process environment at first access and
+    /// then frozen for the lifetime of this instance. This is intentional — callers rebuild a
+    /// fresh `RuneConfig` when the underlying files change.
+    resolved_root: std::sync::OnceLock<Value>,
 }
 
 impl RuneConfig {
@@ -133,6 +142,7 @@ impl RuneConfig {
             documents,
             main_doc_key: main_key,
             raw_content: content,
+            resolved_root: std::sync::OnceLock::new(),
         })
     }
 
@@ -149,6 +159,7 @@ impl RuneConfig {
             documents,
             main_doc_key: main_key,
             raw_content: content.to_string(),
+            resolved_root: std::sync::OnceLock::new(),
         })
     }
 
@@ -162,6 +173,8 @@ impl RuneConfig {
 
     pub fn inject_import(&mut self, alias: String, document: Document) {
         self.documents.insert(alias, document);
+        // Documents changed: drop the memoized resolution so it rebuilds on next access.
+        self.resolved_root = std::sync::OnceLock::new();
     }
 
     pub fn import_aliases(&self) -> Vec<String> {
