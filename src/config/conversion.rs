@@ -11,6 +11,7 @@ impl TryFrom<Value> for String {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::String(s) => Ok(s),
             _ => Err(RuneError::TypeError {
                 message: format!("Expected string, got {:?}", value),
@@ -28,6 +29,7 @@ impl TryFrom<Value> for f64 {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Number(n) => Ok(n),
             _ => Err(RuneError::TypeError {
                 message: format!("Expected number, got {:?}", value),
@@ -45,6 +47,7 @@ impl TryFrom<Value> for f32 {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Number(n) => Ok(n as f32),
             _ => Err(RuneError::TypeError {
                 message: format!("Expected number, got {:?}", value),
@@ -62,6 +65,7 @@ impl TryFrom<Value> for i32 {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Number(n) => Ok(n as i32),
             _ => Err(RuneError::TypeError {
                 message: format!("Expected number, got {:?}", value),
@@ -79,6 +83,7 @@ impl TryFrom<Value> for i64 {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Number(n) => Ok(n as i64),
             _ => Err(RuneError::TypeError {
                 message: format!("Expected number, got {:?}", value),
@@ -96,6 +101,7 @@ impl TryFrom<Value> for u8 {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Number(n) => {
                 if n >= 0.0 && n <= u8::MAX as f64 {
                     Ok(n as u8)
@@ -125,6 +131,7 @@ impl TryFrom<Value> for u16 {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Number(n) => {
                 if n >= 0.0 && n <= u16::MAX as f64 {
                     Ok(n as u16)
@@ -154,6 +161,7 @@ impl TryFrom<Value> for u32 {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Number(n) => {
                 if n >= 0.0 && n <= u32::MAX as f64 {
                     Ok(n as u32)
@@ -183,6 +191,7 @@ impl TryFrom<Value> for u64 {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Number(n) => {
                 if n >= 0.0 && n <= u64::MAX as f64 {
                     Ok(n as u64)
@@ -212,6 +221,7 @@ impl TryFrom<Value> for usize {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Number(n) => {
                 if n >= 0.0 && n.is_finite() {
                     Ok(n as usize)
@@ -241,6 +251,7 @@ impl TryFrom<Value> for bool {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Bool(b) => Ok(b),
             Value::Reference(ref path) if path.len() == 1 => {
                 let ref_name = &path[0];
@@ -289,6 +300,7 @@ where
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Array(arr) => {
                 let mut result = Vec::new();
                 for item in arr {
@@ -315,6 +327,7 @@ where
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Null => Ok(None),
             v => Ok(Some(T::try_from(v)?)),
         }
@@ -356,6 +369,7 @@ impl TryFrom<Value> for HashMap<String, Value> {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Object(items) => object_items_to_map(items),
             _ => Err(RuneError::TypeError {
                 message: format!("Expected object, got {:?}", value),
@@ -373,6 +387,7 @@ impl TryFrom<Value> for HashMap<String, String> {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Object(items) => {
                 let base = object_items_to_map(items)?;
                 let mut map = HashMap::new();
@@ -398,6 +413,7 @@ impl TryFrom<Value> for (String, String) {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Array(arr) if arr.len() == 2 => {
                 let first = String::try_from(arr[0].clone())?;
                 let second = String::try_from(arr[1].clone())?;
@@ -419,6 +435,7 @@ impl TryFrom<Value> for (String, Value) {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
+            Value::Annotated(value) => Self::try_from(*value.value),
             Value::Array(arr) if arr.len() == 2 => {
                 let key = String::try_from(arr[0].clone())?;
                 let val = arr[1].clone();

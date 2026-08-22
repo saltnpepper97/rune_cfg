@@ -242,6 +242,12 @@ impl RuneConfig {
                         })?;
                         cur = next;
                     }
+                    Value::Annotated(value) => {
+                        cur = value
+                            .attributes
+                            .iter()
+                            .find_map(|(key, value)| (key == seg).then_some(value))?;
+                    }
                     _ => return None,
                 }
             }
@@ -281,7 +287,10 @@ impl RuneConfig {
         let (line, snippet) = helpers::find_config_line(path, &self.raw_content);
         if line > 0 {
             RuneError::SyntaxError {
-                message: format!("Path '{}' not found in configuration (near line {})", path, line),
+                message: format!(
+                    "Path '{}' not found in configuration (near line {})",
+                    path, line
+                ),
                 line,
                 column: 0,
                 hint: Some(format!("Check around: {}", snippet)),
@@ -317,6 +326,11 @@ impl RuneConfig {
                     ObjectItem::Assign(k, _) => Some(k.clone()),
                     _ => None,
                 })
+                .collect()),
+            Value::Annotated(value) => Ok(value
+                .attributes
+                .iter()
+                .map(|(key, _)| key.clone())
                 .collect()),
             _ => Err(RuneError::TypeError {
                 message: format!("Path '{}' is not an object", path),

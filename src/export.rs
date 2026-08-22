@@ -250,4 +250,16 @@ mod tests {
         assert_eq!(v["items"]["root"][0]["key"], "a");
         assert_eq!(v["items"]["root"][0]["value"], 1.0);
     }
+
+    #[test]
+    fn test_export_inline_with_attributes() {
+        let mut parser = Parser::new("font \"Inter\" with size 14 weight 600\n").unwrap();
+        let doc = parser.parse_document().unwrap();
+        let json_output = export_document_to_json(&doc).unwrap();
+        let value: serde_json::Value = serde_json::from_str(&json_output).unwrap();
+
+        assert_eq!(value["globals"]["font"]["value"], "Inter");
+        assert_eq!(value["globals"]["font"]["with"][0]["key"], "size");
+        assert_eq!(value["globals"]["font"]["with"][0]["value"], 14.0);
+    }
 }

@@ -43,9 +43,9 @@ impl RuneConfig {
     ) -> Result<String, RuneError> {
         let value = self.get_value(path)?;
 
-        let string_value = match value {
+        let string_value = match value.into_primary() {
             Value::String(s) => s,
-            _ => {
+            value => {
                 return Err(RuneError::TypeError {
                     message: format!("Expected string for `{}`, got {:?}", path, value),
                     line: 0,
@@ -144,6 +144,7 @@ fn validate_value(
     value: &Value,
     diagnostics: &mut Vec<RuneDiagnostic>,
 ) {
+    let value = value.primary();
     if !type_matches(&field.kind, value) {
         diagnostics.push(type_diagnostic(
             path,
@@ -213,6 +214,7 @@ fn validate_value(
 }
 
 fn type_matches(kind: &SchemaType, value: &Value) -> bool {
+    let value = value.primary();
     match (kind, value) {
         (SchemaType::Any, _) => true,
         (SchemaType::String, Value::String(_)) => true,

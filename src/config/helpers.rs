@@ -269,7 +269,7 @@ pub(super) fn evaluate_conditional(
 }
 
 fn stringify_interpolated_value(value: &Value) -> Result<String, RuneError> {
-    match value {
+    match value.primary() {
         Value::String(s) => Ok(s.clone()),
         Value::Number(n) => Ok(n.to_string()),
         Value::Bool(b) => Ok(b.to_string()),
@@ -474,6 +474,21 @@ pub(super) fn resolve_value_recursively(
             let mut flattened: Vec<ObjectItem> = Vec::new();
             flatten_items(&mut flattened, items, parser, main_doc)?;
             Ok(Value::Object(flattened))
+        }
+
+        Value::Annotated(value) => {
+            let primary = resolve_value_recursively(&value.value, parser, main_doc)?;
+            let mut attributes = Vec::with_capacity(value.attributes.len());
+            for (name, attribute) in &value.attributes {
+                attributes.push((
+                    name.clone(),
+                    resolve_value_recursively(attribute, parser, main_doc)?,
+                ));
+            }
+            Ok(Value::Annotated(Box::new(crate::ast::AnnotatedValue {
+                value: Box::new(primary),
+                attributes,
+            })))
         }
 
         _ => Ok(value.clone()),

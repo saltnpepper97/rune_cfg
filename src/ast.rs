@@ -96,7 +96,7 @@ impl PartialEq for Value {
 
 impl Value {
     pub fn as_object(&self) -> Option<&Vec<ObjectItem>> {
-        if let Value::Object(items) = self {
+        if let Value::Object(items) = self.primary() {
             Some(items)
         } else {
             None
@@ -104,7 +104,7 @@ impl Value {
     }
 
     pub fn as_regex(&self) -> Option<&Regex> {
-        if let Value::Regex(r) = self {
+        if let Value::Regex(r) = self.primary() {
             Some(r)
         } else {
             None
@@ -127,8 +127,16 @@ impl Value {
         }
     }
 
-    pub fn matches(&self, text: &str) -> bool {
+    /// Consume this value and return its primary value, discarding attributes.
+    pub fn into_primary(self) -> Value {
         match self {
+            Value::Annotated(value) => *value.value,
+            value => value,
+        }
+    }
+
+    pub fn matches(&self, text: &str) -> bool {
+        match self.primary() {
             Value::Regex(r) => r.is_match(text),
             Value::String(s) => s == text,
             _ => false,

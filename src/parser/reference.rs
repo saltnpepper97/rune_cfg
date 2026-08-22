@@ -64,6 +64,12 @@ pub(super) fn resolve_reference<'b>(
                     return None;
                 }
             }
+            Value::Annotated(value) => {
+                current = value
+                    .attributes
+                    .iter()
+                    .find_map(|(key, value)| (key == seg).then_some(value))?;
+            }
             _ => {
                 return None;
             }

@@ -539,6 +539,26 @@ fn test_tuple_string_value_conversion() {
 }
 
 #[test]
+fn inline_attributes_keep_typed_primary_and_addressable_fields() {
+    let config = RuneConfig::from_str(
+        r#"
+default_delay 120
+font "Inter" with size 14 antialias true delay default_delay
+"#,
+    )
+    .expect("inline attributes should parse");
+
+    assert_eq!(config.get::<String>("font").unwrap(), "Inter");
+    assert_eq!(config.get::<f64>("font.size").unwrap(), 14.0);
+    assert!(config.get::<bool>("font.antialias").unwrap());
+    assert_eq!(config.get::<f64>("font.delay").unwrap(), 120.0);
+    assert_eq!(
+        config.get_keys("font").unwrap(),
+        vec!["size", "antialias", "delay"]
+    );
+}
+
+#[test]
 fn test_tuple_wrong_length_error() {
     let value = Value::Array(vec![Value::String("only_one".to_string())]);
 
