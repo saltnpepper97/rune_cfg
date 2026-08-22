@@ -174,6 +174,26 @@ fn test_hyphen_and_underscore_identifiers() {
 }
 
 #[test]
+fn comments_preserve_the_newline_statement_boundary() {
+    let input = "name \"Rune\" # inline comment\nenabled true\n";
+    let mut lexer = Lexer::new(input);
+
+    let expected_tokens = vec![
+        Token::Ident("name".into()),
+        Token::String("Rune".into()),
+        Token::Newline,
+        Token::Ident("enabled".into()),
+        Token::Bool(true),
+        Token::Newline,
+        Token::Eof,
+    ];
+
+    for expected in expected_tokens {
+        assert_eq!(lexer.next_token(), Ok(expected));
+    }
+}
+
+#[test]
 fn test_endif_token() {
     let input = r#"
 if something:

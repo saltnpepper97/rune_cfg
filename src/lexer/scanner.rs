@@ -30,11 +30,9 @@ pub(super) fn skip_whitespace_and_comments(lexer: &mut Lexer, skip_newlines: boo
             }
             '\n' => break,
             '#' => {
-                // Skip comment until end of line
-                while let Some(ch) = bump(lexer) {
-                    if ch == '\n' {
-                        break;
-                    }
+                // Preserve the newline as a statement boundary outside arrays.
+                while lexer.peek.is_some_and(|ch| ch != '\n') {
+                    bump(lexer);
                 }
             }
             _ => break,
