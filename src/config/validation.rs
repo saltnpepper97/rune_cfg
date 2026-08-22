@@ -304,6 +304,7 @@ fn line_diagnostic(path: &str, message: String, raw_content: &str) -> RuneDiagno
 
 fn value_type_name(value: &Value) -> String {
     match value {
+        Value::Annotated(value) => value_type_name(&value.value),
         Value::String(_) => "string".into(),
         Value::Number(number) if number.fract() == 0.0 => "int".into(),
         Value::Number(_) => "number".into(),

@@ -149,12 +149,12 @@ fn parse_top_level_item(
         Some(Token::Equals) => {
             // Explicit assignment with =
             parser.bump()?;
-            let value = value::parse_value(parser)?;
+            let value = value::parse_value_with_attributes(parser)?;
             globals.push((key, value));
         }
         _ => {
             // Implicit assignment (no = needed)
-            let value = value::parse_value(parser)?;
+            let value = value::parse_value_with_attributes(parser)?;
             globals.push((key, value));
         }
     }

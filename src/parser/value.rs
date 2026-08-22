@@ -2,7 +2,7 @@
 // License: MIT
 
 use super::*;
-use crate::ast::ObjectItem;
+use crate::ast::{AnnotatedValue, ObjectItem};
 use crate::resolver::{expand_dollar_string, parse_dollar_reference};
 use regex::Regex;
 
@@ -78,8 +78,86 @@ pub(super) fn parse_assignment(parser: &mut Parser) -> Result<(String, Value), R
         _ => {}
     }
 
-    let value = parse_value(parser)?;
+    let value = parse_value_with_attributes(parser)?;
     Ok((key, value))
+}
+
+pub(super) fn parse_value_with_attributes(parser: &mut Parser) -> Result<Value, RuneError> {
+    let value = parse_value(parser)?;
+    let Some(Token::Ident(keyword)) = parser.peek() else {
+        return Ok(value);
+    };
+    if keyword != "with" {
+        return Ok(value);
+    }
+    parser.bump()?;
+
+    let mut attributes = Vec::new();
+    loop {
+        match parser.peek() {
+            Some(
+                Token::Newline
+                | Token::Eof
+                | Token::End
+                | Token::EndIf
+                | Token::Else
+                | Token::ElseIf,
+            ) => break,
+            Some(Token::Ident(_) | Token::String(_)) => {
+                let name = match parser.bump()? {
+                    Token::Ident(name) | Token::String(name) => name,
+                    _ => unreachable!(),
+                };
+                if matches!(
+                    parser.peek(),
+                    Some(
+                        Token::Newline
+                            | Token::Eof
+                            | Token::End
+                            | Token::EndIf
+                            | Token::Else
+                            | Token::ElseIf
+                    )
+                ) {
+                    return Err(RuneError::SyntaxError {
+                        message: format!("Missing value for inline attribute '{name}'"),
+                        line: parser.line(),
+                        column: parser.column(),
+                        hint: Some(format!("Add a value after '{name}'")),
+                        code: Some(216),
+                    });
+                }
+                attributes.push((name, parse_value(parser)?));
+            }
+            Some(token) => {
+                return Err(RuneError::InvalidToken {
+                    token: token.describe(),
+                    line: parser.line(),
+                    column: parser.column(),
+                    hint: Some(
+                        "Expected an attribute name or the end of the line after 'with'".into(),
+                    ),
+                    code: Some(216),
+                });
+            }
+            None => break,
+        }
+    }
+
+    if attributes.is_empty() {
+        return Err(RuneError::SyntaxError {
+            message: "Expected at least one named attribute after 'with'".into(),
+            line: parser.line(),
+            column: parser.column(),
+            hint: Some("Use `with name value`, or remove `with`".into()),
+            code: Some(216),
+        });
+    }
+
+    Ok(Value::Annotated(Box::new(AnnotatedValue {
+        value: Box::new(value),
+        attributes,
+    })))
 }
 
 pub(super) fn parse_value(parser: &mut Parser) -> Result<Value, RuneError> {

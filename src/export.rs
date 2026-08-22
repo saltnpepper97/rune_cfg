@@ -57,6 +57,22 @@ pub fn export_document_to_json(doc: &Document) -> Result<String, RuneError> {
                     }
                 })
             }
+            crate::ast::Value::Annotated(value) => {
+                let attributes = value
+                    .attributes
+                    .iter()
+                    .map(|(key, value)| {
+                        json!({
+                            "key": key,
+                            "value": value_to_json(value)
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                json!({
+                    "value": value_to_json(&value.value),
+                    "with": attributes
+                })
+            }
             crate::ast::Value::Null => serde_json::Value::Null,
         }
     }

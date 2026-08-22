@@ -414,6 +414,76 @@ end
 }
 
 #[test]
+fn test_inline_with_attributes_in_object_block() {
+    let input = r#"
+keybinds:
+  "$var.mod+left" "focus-left" with repeat false delay-ms 120
+  "$var.mod+right" "focus-right"
+end
+"#;
+
+    let mut parser = Parser::new(input).expect("Failed to create parser");
+    let doc = parser
+        .parse_document()
+        .expect("inline attributes should parse");
+    let Value::Object(items) = &doc.items[0].1 else {
+        panic!("Expected 'keybinds' to be an object");
+    };
+    let value = items.iter().find_map(|item| match item {
+        ObjectItem::Assign(key, value) if key == "$var.mod+left" => Some(value),
+        _ => None,
+    });
+    let Some(Value::Annotated(value)) = value else {
+        panic!("Expected an annotated keybind value");
+    };
+    assert_eq!(value.value.as_ref(), &Value::String("focus-left".into()));
+    assert_eq!(
+        value.attributes,
+        vec![
+            ("repeat".into(), Value::Bool(false)),
+            ("delay-ms".into(), Value::Number(120.0)),
+        ]
+    );
+    assert!(items.iter().any(|item| {
+        matches!(item, ObjectItem::Assign(key, Value::String(value)) if key == "$var.mod+right" && value == "focus-right")
+    }));
+}
+
+#[test]
+fn test_inline_with_attributes_at_top_level() {
+    let input = "font \"Inter\" with size 14 weight 600\n";
+    let mut parser = Parser::new(input).expect("Failed to create parser");
+    let doc = parser
+        .parse_document()
+        .expect("inline attributes should parse");
+    let Value::Annotated(value) = &doc.globals[0].1 else {
+        panic!("Expected an annotated global value");
+    };
+    assert_eq!(value.value.as_ref(), &Value::String("Inter".into()));
+    assert_eq!(value.attributes.len(), 2);
+}
+
+#[test]
+fn test_inline_with_requires_attributes() {
+    let mut parser = Parser::new("font \"Inter\" with\n").unwrap();
+    let error = parser.parse_document().unwrap_err().to_string();
+    assert!(error.contains("at least one named attribute"), "{error}");
+}
+
+#[test]
+fn test_inline_with_comment_does_not_consume_the_next_assignment() {
+    let input = "app:\n  first \"one\" with enabled true # comment\n  second \"two\"\nend\n";
+    let mut parser = Parser::new(input).unwrap();
+    let doc = parser
+        .parse_document()
+        .expect("comment should end the attributes");
+    let Value::Object(items) = &doc.items[0].1 else {
+        panic!("Expected object");
+    };
+    assert_eq!(items.len(), 2);
+}
+
+#[test]
 fn test_quoted_string_key_can_open_nested_block() {
     let input = r#"
 sections:

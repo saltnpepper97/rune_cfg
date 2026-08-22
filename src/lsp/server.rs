@@ -1363,6 +1363,7 @@ fn value_literal(value: &crate::Value) -> String {
         crate::Value::Reference(reference) => reference.join("."),
         crate::Value::Interpolated(_) => "\"\"".into(),
         crate::Value::Conditional(_) => "null".into(),
+        crate::Value::Annotated(value) => value_literal(&value.value),
     }
 }
 

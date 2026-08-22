@@ -30,6 +30,15 @@ pub struct ConditionalValue {
     pub else_value: Option<Value>,
 }
 
+/// A primary value decorated with line-scoped named attributes.
+///
+/// Produced by syntax such as `font "Inter" with size 14 weight 600`.
+#[derive(Debug, Clone, PartialEq)]
+pub struct AnnotatedValue {
+    pub value: Box<Value>,
+    pub attributes: Vec<(String, Value)>,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum ObjectItem {
     Assign(String, Value),
@@ -60,6 +69,9 @@ pub enum Value {
     /// Inline/value conditional: `x = if cond a else b`
     Conditional(Box<ConditionalValue>),
 
+    /// A primary value followed by inline `with name value` attributes.
+    Annotated(Box<AnnotatedValue>),
+
     Null,
 }
 
@@ -75,6 +87,7 @@ impl PartialEq for Value {
             (Value::Reference(a), Value::Reference(b)) => a == b,
             (Value::Interpolated(a), Value::Interpolated(b)) => a == b,
             (Value::Conditional(a), Value::Conditional(b)) => a == b,
+            (Value::Annotated(a), Value::Annotated(b)) => a == b,
             (Value::Null, Value::Null) => true,
             _ => false,
         }
@@ -95,6 +108,22 @@ impl Value {
             Some(r)
         } else {
             None
+        }
+    }
+
+    pub fn as_annotated(&self) -> Option<&AnnotatedValue> {
+        if let Value::Annotated(value) = self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    /// Return the primary value, whether this value is annotated or plain.
+    pub fn primary(&self) -> &Value {
+        match self {
+            Value::Annotated(value) => &value.value,
+            value => value,
         }
     }
 
