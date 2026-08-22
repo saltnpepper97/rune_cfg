@@ -74,6 +74,7 @@
 //! enabled true
 //! timeout 30.5
 //! nothing null
+//! font "Inter" with size 14 weight 600
 //! ```
 //!
 //! ### Objects

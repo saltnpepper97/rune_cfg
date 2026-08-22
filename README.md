@@ -108,6 +108,28 @@ servers ["web1", "web2", "web3"]
 ports [8080, 8081, 8082]
 ```
 
+### Inline Attributes
+
+Use `with` when a value has a small number of named options that should stay
+on the same line:
+
+```rune
+font "Inter" with size 14 weight 600
+launcher "fuzzel" with terminal false
+```
+
+`with` accepts any number of `name value` pairs. Typed access to the original
+path returns the primary value, while attributes are available through normal
+dot paths:
+
+```rust
+let font: String = config.get("font")?;      // "Inter"
+let size: u16 = config.get("font.size")?;    // 14
+```
+
+Use an object block when the fields are the value itself or need multiple
+lines; inline attributes are intended for a primary value with a few options.
+
 ### Native Regex Patterns
 
 RUNE has first-class regex support. Use the `r""` syntax for regex patterns:

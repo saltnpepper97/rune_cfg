@@ -26,6 +26,9 @@ app:
   ]
 end
 
+font "Inter" with size 14 weight 600
+"$var.mod+left" "focus-left" with repeat false
+
 ---
 
 (source_file
@@ -48,4 +51,15 @@ end
       key: (identifier)
       value: (array
         (string)
-        (string)))))
+        (string))))
+  (assignment
+    key: (identifier)
+    value: (string)
+    attributes: (inline_attributes
+      (inline_attribute name: (identifier) value: (number))
+      (inline_attribute name: (identifier) value: (number))))
+  (assignment
+    key: (string)
+    value: (string)
+    attributes: (inline_attributes
+      (inline_attribute name: (identifier) value: (boolean)))))

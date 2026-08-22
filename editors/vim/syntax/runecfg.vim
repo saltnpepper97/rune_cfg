@@ -17,7 +17,7 @@ syn match runeNumber "\v<\d+(\.\d+)?>"
 syn keyword runeBoolean true false
 syn keyword runeNull null None
 
-syn keyword runeKeyword gather as if else elseif else-if schema
+syn keyword runeKeyword gather as if else elseif else-if schema with
 syn keyword runeEndKeyword end endif
 syn keyword runeSchemaKeyword required default range
 syn keyword runeSchemaType string str int integer float number bool boolean regex any object

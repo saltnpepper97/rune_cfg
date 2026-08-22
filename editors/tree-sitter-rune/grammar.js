@@ -126,10 +126,21 @@ module.exports = grammar({
     ),
 
     assignment: $ => seq(
-      field('key', $.identifier),
+      field('key', choice($.identifier, $.string)),
       optional('='),
       field('value', $._value),
+      optional(field('attributes', $.inline_attributes)),
       $._terminator,
+    ),
+
+    inline_attributes: $ => seq(
+      'with',
+      repeat1($.inline_attribute),
+    ),
+
+    inline_attribute: $ => seq(
+      field('name', choice($.identifier, $.string)),
+      field('value', $._value),
     ),
 
     _value: $ => choice(

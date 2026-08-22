@@ -46,12 +46,26 @@
     "type": "assignment",
     "named": true,
     "fields": {
+      "attributes": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "inline_attributes",
+            "named": true
+          }
+        ]
+      },
       "key": {
         "multiple": false,
         "required": true,
         "types": [
           {
             "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "string",
             "named": true
           }
         ]
@@ -160,6 +174,79 @@
         },
         {
           "type": "object_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "inline_attribute",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "array",
+            "named": true
+          },
+          {
+            "type": "boolean",
+            "named": true
+          },
+          {
+            "type": "conditional_value",
+            "named": true
+          },
+          {
+            "type": "null",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "reference",
+            "named": true
+          },
+          {
+            "type": "regex",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "inline_attributes",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "inline_attribute",
           "named": true
         }
       ]
@@ -606,11 +693,11 @@
   },
   {
     "type": "number",
-    "named": false
+    "named": true
   },
   {
     "type": "number",
-    "named": true
+    "named": false
   },
   {
     "type": "object",
@@ -618,11 +705,11 @@
   },
   {
     "type": "range",
-    "named": false
+    "named": true
   },
   {
     "type": "range",
-    "named": true
+    "named": false
   },
   {
     "type": "reference",
@@ -658,6 +745,10 @@
   },
   {
     "type": "true",
+    "named": false
+  },
+  {
+    "type": "with",
     "named": false
   }
 ]
